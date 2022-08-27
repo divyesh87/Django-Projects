@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      .hide {
+        margin-right: 40px;
+        width: 80px;
+      }
+      .content {
+        height: 100px;
+        width: 100vw;
+        background-color: aqua;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: xx-large;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        animation-name: hide;
+        animation-play-state: paused;
+        animation-duration: 1s;
+      }
+
+      @keyframes hide {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
+    </style>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", loadPosts);
+      let start = 1;
+      let quantity = 20;
+
+      document.addEventListener("click", (event) => {
+        let element = event.target;
+
+        if (element.className == "hide") {
+          element.parentElement.style.animationPlayState = "running";
+          element.parentElement.addEventListener("animationend", () => {
+            element.parentElement.remove();
+          });
+        }
+      });
+
+      window.onscroll = () => {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight)
+          loadPosts();
+      };
+
+      function loadPosts() {
+        fetch(`/posts/loadpost?start=${start}&end=${start + quantity - 1}`)
+          .then((response) => response.json())
+          .then((data) => {
+            data.posts.forEach((content) => {
+              const newElement = document.createElement("div");
+              newElement.classList.add("content");
+              newElement.innerHTML = `${content} <button class="hide">Delete</button>`;
+              document.body.appendChild(newElement);
+            });
+          });
+        start += quantity;
+      }
+    </script>
+  </head>
+  <body>
+    <h1>POSTS</h1>
+  </body>
+</html>
